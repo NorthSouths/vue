@@ -53,6 +53,8 @@ export class Observer {
     // this.value = value
     this.dep = mock ? mockDep : new Dep()
     this.vmCount = 0
+    // 给value新增一个__ob__属性，值为该value的Observer实例
+    // 相当于为value打上标记，表示它已经被转化成响应式了，避免重复操作
     def(value, '__ob__', this)
     if (isArray(value)) {
       if (!mock) {
@@ -68,6 +70,7 @@ export class Observer {
         }
       }
       if (!shallow) {
+        // 将数组中的所有元素转化为可被侦测的响应式
         this.observeArray(value)
       }
     } else {
@@ -76,6 +79,7 @@ export class Observer {
        * getter/setters. This method should only be called when
        * value type is Object.
        */
+      // 将对象中的每个属性转化为响应式属性
       const keys = Object.keys(value)
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i]
@@ -92,7 +96,7 @@ export class Observer {
       observe(value[i], false, this.mock)
     }
   }
-}
+} 
 
 // helpers
 
@@ -143,6 +147,9 @@ export function defineReactive(
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
+
+  // val === NO_INITIAL_VALUE，即val是个空对象
+  // arguments.length === 2，即只传了obj和key
   if (
     (!getter || setter) &&
     (val === NO_INITIAL_VALUE || arguments.length === 2)
@@ -151,6 +158,8 @@ export function defineReactive(
   }
 
   let childOb = !shallow && observe(val, false, mock)
+  // 在getter中收集依赖，setter中通知依赖更新
+  // 依赖，谁用到了这个数据谁就是依赖
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

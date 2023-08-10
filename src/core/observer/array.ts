@@ -3,6 +3,7 @@
  * dynamically accessing methods on Array prototype
  */
 
+// 增加数组方法拦截器
 import { TriggerOpTypes } from '../../v3'
 import { def } from '../util/index'
 
@@ -27,7 +28,9 @@ methodsToPatch.forEach(function (method) {
   const original = arrayProto[method]
   def(arrayMethods, method, function mutator(...args) {
     const result = original.apply(this, args)
+    // ob是value对应的Observer类实例
     const ob = this.__ob__
+    // 获取新增的元素
     let inserted
     switch (method) {
       case 'push':

@@ -38,6 +38,10 @@ export interface WatcherOptions extends DebuggerOptions {
  * This is used for both the $watch() api and directives.
  * @internal
  */
+
+// 谁用到了数据，谁就是依赖，我们就为谁创建一个Watcher实例
+// 在之后数据变化时，我们不直接去通知依赖更新，
+// 而是通知依赖对应的Watch实例，由Watcher实例去通知真正的视图
 export default class Watcher implements DepTarget {
   vm?: Component | null
   expression: string
@@ -131,10 +135,13 @@ export default class Watcher implements DepTarget {
    * Evaluate the getter, and re-collect dependencies.
    */
   get() {
+    // Watcher先把自己设置到Dep.target
+    // 在dep的getter就会从Dep.target读取当前正在读取数据的Watcher
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      // 获取被依赖的数据，从而触发getter收集依赖
       value = this.getter.call(vm, vm)
     } catch (e: any) {
       if (this.user) {
@@ -148,6 +155,7 @@ export default class Watcher implements DepTarget {
       if (this.deep) {
         traverse(value)
       }
+      // 释放掉target
       popTarget()
       this.cleanupDeps()
     }

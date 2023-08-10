@@ -8,6 +8,7 @@ const pendingCleanupDeps: Dep[] = []
 export const cleanupDeps = () => {
   for (let i = 0; i < pendingCleanupDeps.length; i++) {
     const dep = pendingCleanupDeps[i]
+    // filter方法会过滤掉空值
     dep.subs = dep.subs.filter(s => s)
     dep._pending = false
   }
@@ -29,8 +30,10 @@ export interface DepTarget extends DebuggerOptions {
  * @internal
  */
 export default class Dep {
+  // target用于在不同的Dep和Watch间获取当前正在读取数据的Watcher
   static target?: DepTarget | null
   id: number
+  // 每个数据的依赖数组
   subs: Array<DepTarget | null>
   // pending subs cleanup
   _pending = false
@@ -49,6 +52,8 @@ export default class Dep {
     // clean up in Chromium
     // to workaround this, we unset the sub for now, and clear them on
     // next scheduler flush.
+
+    // 先将sub对应的数组位置置空，在下一个tick筛掉null值
     this.subs[this.subs.indexOf(sub)] = null
     if (!this._pending) {
       this._pending = true
