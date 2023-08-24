@@ -45,26 +45,26 @@ export default class VNode {
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
   ) {
-    this.tag = tag
-    this.data = data
+    this.tag = tag  // 标签名
+    this.data = data  // 当前节点对应的对象，包含了具体的一些数据信息
     this.children = children
-    this.text = text
-    this.elm = elm
-    this.ns = undefined
-    this.context = context
-    this.fnContext = undefined
+    this.text = text  // 文本
+    this.elm = elm    // 当前VDOM对应的真实dom节点
+    this.ns = undefined // 命名空间
+    this.context = context  // 当前节点对应的Vue实例
+    this.fnContext = undefined  // 函数式组件对应的Vue实例
     this.fnOptions = undefined
     this.fnScopeId = undefined
     this.key = data && data.key
-    this.componentOptions = componentOptions
-    this.componentInstance = undefined
+    this.componentOptions = componentOptions  // 组件的options选项
+    this.componentInstance = undefined  // 当前节点对应的组件实例
     this.parent = undefined
-    this.raw = false
+    this.raw = false  // 是否为原生HTML或只是普通文本，innerHTML的时候为true，textContent的时候为false
     this.isStatic = false
-    this.isRootInsert = true
-    this.isComment = false
-    this.isCloned = false
-    this.isOnce = false
+    this.isRootInsert = true  // 是否作为根节点插入
+    this.isComment = false  // 是否为注释节点
+    this.isCloned = false // 是否为克隆节点
+    this.isOnce = false // 是否有v-once指令
     this.asyncFactory = asyncFactory
     this.asyncMeta = undefined
     this.isAsyncPlaceholder = false
